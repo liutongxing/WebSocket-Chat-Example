@@ -64,7 +64,7 @@
       });
       socket.on('chat-message', function(msg){
 		devLog('chat-message', msg);
-		addLine('message', msg);
+		addLine('message', msg.user.name + " : " + msg.message, msg.user.color);
       });
 	  socket.on('info', function(msg){
 		devLog('info', msg);
@@ -84,13 +84,17 @@
 			var users_new = $('<ul>');
 			users_new = users_new.append($('<div class="header">').text('Users Online : '+msg.users.length));
 			msg.users.forEach(function(user, index){
-				users_new = users_new.append($('<li>').text(user.name + ' ('+user.ip+')'));
+				users_new = users_new.append($('<li>').css({'color': user.color}).text(user.name + ' ('+user.ip+')'));
 			});
 			$('#users').html(users_new);
 		}
       });	  
-	  addLine = function(type, msg) {
-		messagesDiv.append($('<li>').addClass(type).text(msg));
+	  addLine = function(type, msg, color) {
+		if(color) {
+			messagesDiv.append($('<li>').addClass(type).css({'color': color}).text(msg));
+		} else {
+			messagesDiv.append($('<li>').addClass(type).text(msg));
+		}
 		messagesDiv[0].scrollIntoView(false);
 	  }
 	  

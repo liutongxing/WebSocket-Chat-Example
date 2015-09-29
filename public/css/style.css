@@ -1,27 +1,34 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html, body { height: 100%; margin: 0; }
-::-webkit-scrollbar {
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #333; border-radius: 4px; margin: 10px 0; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,.5); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,.75); }
+#log::-webkit-scrollbar-track { background-color: green; }
+#messages::-webkit-scrollbar-track { background-color: #B18831; }
+/* #B13131 #315AB1 #31B166 #B18831 */
+/*#log::-webkit-scrollbar {
     width: 12px;
 }
-::-webkit-scrollbar-track {
+#log::-webkit-scrollbar-track {
     -webkit-box-shadow: inset 0 0 6px green; 
     border-radius: 10px;
 }
-::-webkit-scrollbar-thumb {
+#log::-webkit-scrollbar-thumb {
     border-radius: 10px;
     -webkit-box-shadow: inset 0 0 6px green; 
-}
+}*/
 .box { display: flex; flex-flow:column; height: 100% }
 .box .row{ flex: 0 1 30px; }
 .box .row.header { flex: 0 1 auto; }
-.box .row.content { flex: 1 1 auto; display: flex; }
-.box .row.content .left { flex: 1 1 auto; }
-.box .row.content .right { flex: 0 0 150px; }
-.box .row.footer { flex: 0 1 40px; }
+.box .row.content { flex: 0 1 100%; display: flex; overflow: auto; }
+.box .row.content .left { flex: 1 1 auto; overflow-y: auto; }
+.box .row.content .right { flex: 0 0 200px; }
+.box .row.footer { flex: 0 0 40px; }
 #log {
 	background-color: black;
 	/* border-bottom: 5px lightgrey groove; */
-	flex: 0 250px;
+	flex: 1 0 150px;
 	padding-left: 10px;
 	font-weight: 900;
 	color: green;
@@ -31,10 +38,10 @@ html, body { height: 100%; margin: 0; }
 	word-break: break-all;
 }
 #log li {	display: flex; }
-#log .type {	flex: 0 150px; }
-#logbutton { flex: 0 10px; background: linear-gradient(black, lightgrey); }
+#log .type {	flex: 0 0 150px; }
+#logbutton { flex: 1 0 10px; background: linear-gradient(black, lightgrey); }
 #sidepane { display: flex; flex-direction: column; }
-#users { flex: 1 auto; word-break: break-all; }
+#users { flex: 1 0 auto; word-break: break-all; }
 #rooms { flex: 0 1 200px; background-color: lightgrey; border-top: 1px black solid; }
 #sidepane { border-left: 2px grey solid; }
 body { font: 13px Helvetica, Arial; }
@@ -44,7 +51,7 @@ form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 
 /* #chatbox { display: flex; flex-flow: row wrap; } */
 /* #messages { flex: 1 100%; } */
 /* #input { flex: 1 100%; } */
-#messages { list-style-type: none; margin: 0; padding: 0; padding-bottom: 42px; }
+#messages { list-style-type: none; margin: 0; padding: 0; padding-bottom: 42px; overflow-y: auto; }
 #messages li { padding: 5px 10px; }
 #messages li:nth-child(odd) { background: #eee; }
 #messages li.warn { font-style : italic; color: crimson; font-weight:700; }

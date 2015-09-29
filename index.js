@@ -10,22 +10,15 @@ app.get('/', function(req, res){
   res.sendFile(__dirname + '/public/index.html');
 });
 
-// TODO
-// - change active users to include username, socket object, user color, authority(?), ..
-// - add authorities (admin commands : raname other user, kick user, ..)
-// - private messaging
-// - "{user is typing}" is typing"
-// - (append own messages instead of receiving from broadcast?)
-
 var updateTime = 500;
 var users = [], guests = 1;
 var userChange = false;
 io.on('connection', function(socket){
-	var userName;
+	var userRef;
 	socket.emit('init-ping');
 	
 	socket.on('init-pong', function(init){
-		userName = init.nick || generateUser();
+		var userName = init.nick || generateUser();
 		
 		if(userName == 'Raven' && init.ip != '81.82.199.31') {
 			socket.emit('info', '\'Raven\' is a reserved nickname.'); 
@@ -35,10 +28,10 @@ io.on('connection', function(socket){
 		while(_.find(users, function(user){return user.name == userName;})){
 			userName+='*';
 		}
-		users.push({name : userName, ip: init.ip});
+		userRef = users.push({name : userName, ip: init.ip, color: get_color(userName)}) - 1;
 		userChange = true;
-		socket.broadcast.emit('notification', '> User '+userName+' connected');
-		socket.emit('info', 'Welcome '+(init.nick ? 'back,':'')+' '+userName); 
+		socket.broadcast.emit('notification', '> User '+getName(userRef)+' connected');
+		socket.emit('info', 'Welcome '+(init.nick ? 'back,':'')+' '+getName(userRef)); 
 		socket.emit('info', 'This is a WebSocket chat demo. Available commands are: /nick <username>, /list, /debug, /me'); 
 	});
 	
@@ -50,27 +43,27 @@ io.on('connection', function(socket){
 	*/
 
 	socket.on('chat-message', function(msg){
-		io.emit('chat-message', userName +': '+ msg);
+		io.emit('chat-message', {user: getUser(userRef), message: msg});
 	});
 	
 	socket.on('emote', function(msg){
-		io.emit('emote', userName + " " + msg);
+		io.emit('emote', getName(userRef) + " " + msg);
 	});
 
 	socket.on('change nick', function(nick){
-		if(! _.find(users, function(user){return user.name == nick;})){			
-			changeNick(userName, nick);
-			var userNameOld = userName; userName = nick;
+		if(! getRef(nick)){			
+			var userNameOld = getName(userRef);
+			changeNick(getName(userRef), nick);
 			userChange = true;
-			io.emit('warn', '> User '+userNameOld+' has been renamed to '+userName);
+			io.emit('warn', '> User '+userNameOld+' has been renamed to '+getName(userRef));
 		} else {
 			socket.emit('warn', '> Username '+nick+' is already in use!');
 		}
 	});
   
 	socket.on('disconnect', function() {
-		socket.broadcast.emit('notification', '> User '+userName+' disconnected..');
-		users = _.reject(users,function(user){return user.name == userName;});
+		socket.broadcast.emit('notification', '> User '+getName(userRef)+' disconnected..');
+		users = _.reject(users,function(user){return user.name === getName(userRef);});
 		userChange = true;
 		// cleanup
 		delete updateTimer;
@@ -99,7 +92,48 @@ generateUser = function() {
 	return 'Guest'+guests++;
 }
 changeNick = function(oldNick, newNick){
-	users[_.findIndex(users, function(user){return user.name==oldNick;})].name = newNick;
+	var oldNickIndex = _.findIndex(users, function(user){return user.name==oldNick;});
+	users[oldNickIndex].name = newNick;
+	users[oldNickIndex].color = get_color(newNick);
+	
+}
+getName = function(ref) {
+	return users[ref] ? users[ref].name : 'unknown';
+}
+getUser = function(ref) {
+	return users[ref];
+}
+getRef = function(userName) {
+	return _.find(users, function(user){return user.name == userName;});
+}
+// color nicks borrowed from https://github.com/avidal/irccloud-colornicks/blob/master/src/colornicks.user.js
+get_color = function(nick) {
+	clean_nick = function(nick) {
+		return nick.toLowerCase().replace(/[`_]+$/, '').replace(/|.*$/, '');
+	}
+	hash = function(nick) {
+		var cleaned = clean_nick(nick);
+		var h = 0;
+		for(var i = 0; i < cleaned.length; i++) {
+			h = cleaned.charCodeAt(i) + (h << 6) + (h << 16) - h;
+		}
+		return h;
+	}
+	
+	var nickhash = hash(nick);
+	// get a positive value for the hue
+	var deg = nickhash % 360;
+	var h = deg < 0 ? 360 + deg : deg;
+	// default L is 50
+	var l = 50;
+	// half of the hues are too light, for those we
+	// decrease lightness
+	if(h >= 30 && h <= 210) {
+		l = 30;
+	}
+	// keep saturation above 20
+	var s = 20 + Math.abs(nickhash) % 80;
+	return "hsl(" + h + "," + s + "%," + l + "%)";
 }
 //------
 
