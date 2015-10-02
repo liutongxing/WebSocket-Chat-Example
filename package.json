@@ -4,7 +4,14 @@
   "description": "my first socket.io app",
   "dependencies": {
     "express": "4.10.2",
+    "jshint": "^2.8.0",
     "socket.io": "^1.2.0",
     "underscore": "~1.8.3"
-  }
+  },
+  "jshintConfig": {
+    "node": true
+  },
+  "scripts": {
+    "start": "node index.js"
+   }
 }
