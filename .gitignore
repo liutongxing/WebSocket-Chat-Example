@@ -1,1 +1,8 @@
 node_modules
+
+# IntelliJ IDEA
+.idea
+
+# dts manager tsd
+tsd.json
+typings/
