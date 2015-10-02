@@ -2,111 +2,111 @@
 <html>
   <head>
     <title>Socket.IO chat</title>
-	<link rel="stylesheet" type="text/css" href="css/style.css" />
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
   </head>
   <body>
-	<div id="chatbox" class="box">
-		<div id="log" class="row content">
-			<ul></ul>
-		</div>
-		<div id="logbutton" class="row content"></div>
-		<div class="row content">
-			<ul id="messages" class="left"></ul>
-			<div id="sidepane" class="right">
-				<div id="users"></div>
-				<div id="rooms"></div>
-			</div>
-		</div>
-		<div id="input" class="row footer">
-			<form action=""><input id="m" autocomplete="off" /><button>Send</button></form>
-		</div>
-	</div>
-	
+    <div id="chatbox" class="box">
+        <div id="log" class="row content">
+            <ul></ul>
+        </div>
+        <div id="logbutton" class="row content"></div>
+        <div class="row content">
+            <ul id="messages" class="left"></ul>
+            <div id="sidepane" class="right">
+                <div id="users"></div>
+                <div id="rooms"></div>
+            </div>
+        </div>
+        <div id="input" class="row footer">
+            <form action=""><input id="m" autocomplete="off" /><button>Send</button></form>
+        </div>
+    </div>
+    
     <script src="https://cdn.socket.io/socket.io-1.3.6.js"></script>
     <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
-	<script type="text/javascript">var myip;</script>
-	<script type="text/javascript" src="http://l2.io/ip.js?var=myip"></script>
-	<!--<script language="javascript" type="text/javascript" src="script/script.js"></script>-->
+    <script type="text/javascript">var myip;</script>
+    <script type="text/javascript" src="http://l2.io/ip.js?var=myip"></script>
+    <!--<script language="javascript" type="text/javascript" src="script/script.js"></script>-->
     <script>
       var socket = io();
-	  var messagesDiv = $('#messages');
-	  
-	  $('#logbutton').click(function(){
-		$('#log').toggle();
-	  });
-	  
+      var messagesDiv = $('#messages');
+      
+      $('#logbutton').click(function(){
+        $('#log').toggle();
+      });
+      
       $('form').submit(function(){
-		var message = $('#m').val();
-		if(/^\/nick/.test(message)) {
-		  localStorage.setItem('nickname', message.substr(6));
-		  socket.emit('change nick', message.substr(6));
-		} else if(/^\/list/.test(message)) {
-			socket.emit('list users');
-		} else if(/^\/debug/.test(message)) {
-			$('#log').toggle();
-		} else if(/^\/me/.test(message)) {
-			socket.emit('emote', message.substr(4));
-		}  else {
-			socket.emit('chat-message', message);
-		}
+        var message = $('#m').val();
+        if(/^\/nick/.test(message)) {
+          localStorage.setItem('nickname', message.substr(6));
+          socket.emit('change nick', message.substr(6));
+        } else if(/^\/list/.test(message)) {
+            socket.emit('list users');
+        } else if(/^\/debug/.test(message)) {
+            $('#log').toggle();
+        } else if(/^\/me/.test(message)) {
+            socket.emit('emote', message.substr(4));
+        }  else {
+            socket.emit('chat-message', message);
+        }
         $('#m').val('');
         return false;
       });
-	  socket.on('init-ping', function(){
-		var init = {};
-		init.nick = localStorage.getItem('nickname');
-		init.ip = myip;
-		socket.emit('init-pong', init);
-	  });
-	  socket.on('emote', function(msg){
-		devLog('emote', msg);
-		addLine('emote', msg);
+      socket.on('init-ping', function(){
+        var init = {};
+        init.nick = localStorage.getItem('nickname');
+        init.ip = myip;
+        socket.emit('init-pong', init);
+      });
+      socket.on('emote', function(msg){
+        devLog('emote', msg);
+        addLine('emote', msg);
       });
       socket.on('chat-message', function(msg){
-		devLog('chat-message', msg);
-		addLine('message', msg.user.name + " : " + msg.message, msg.user.color);
+        devLog('chat-message', msg);
+        addLine('message', msg.user.name + " : " + msg.message, msg.user.color);
       });
-	  socket.on('info', function(msg){
-		devLog('info', msg);
-		addLine('info', msg);
+      socket.on('info', function(msg){
+        devLog('info', msg);
+        addLine('info', msg);
       });
-	  socket.on('notification', function(msg){
-		devLog('notification', msg);
-		addLine('notification', msg);
+      socket.on('notification', function(msg){
+        devLog('notification', msg);
+        addLine('notification', msg);
       });
-	  socket.on('warn', function(msg){
-		devLog('warn', msg);
-		addLine('warn', msg);
+      socket.on('warn', function(msg){
+        devLog('warn', msg);
+        addLine('warn', msg);
       });
-	  socket.on('update', function(msg){
-		devLog('update', msg);
-		if(msg.users) {
-			var users_new = $('<ul>');
-			users_new = users_new.append($('<div class="header">').text('Users Online : '+msg.users.length));
-			msg.users.forEach(function(user, index){
-				users_new = users_new.append($('<li>').css({'color': user.color}).text(user.name + ' ('+user.ip+')'));
-			});
-			$('#users').html(users_new);
-		}
-      });	  
-	  addLine = function(type, msg, color) {
-		if(color) {
-			messagesDiv.append($('<li>').addClass(type).css({'color': color}).text(msg));
-		} else {
-			messagesDiv.append($('<li>').addClass(type).text(msg));
-		}
-		messagesDiv[0].scrollIntoView(false);
-	  }
-	  
-	  // should keep log as an object that allows filtering (checkbox for different types)
-	  var logDiv = document.getElementById("log");
-	  devLog = function(type, msg) {
-		$('#log > ul').append($('<li>')
-			.append($('<span>').addClass('type').text(type))
-			.append($('<span>').addClass('msg').text(JSON.stringify(msg)))
-		)
-		logDiv.scrollTop = logDiv.scrollHeight;
-	  }
+      socket.on('update', function(msg){
+        devLog('update', msg);
+        if(msg.users) {
+            var users_new = $('<ul>');
+            users_new = users_new.append($('<div class="header">').text('Users Online : '+msg.users.length));
+            msg.users.forEach(function(user, index){
+                users_new = users_new.append($('<li>').css({'color': user.color}).text(user.name + ' ('+user.ip+')'));
+            });
+            $('#users').html(users_new);
+        }
+      });      
+      addLine = function(type, msg, color) {
+        if(color) {
+            messagesDiv.append($('<li>').addClass(type).css({'color': color}).text(msg));
+        } else {
+            messagesDiv.append($('<li>').addClass(type).text(msg));
+        }
+        messagesDiv[0].scrollIntoView(false);
+      }
+      
+      // should keep log as an object that allows filtering (checkbox for different types)
+      var logDiv = document.getElementById("log");
+      devLog = function(type, msg) {
+        $('#log > ul').append($('<li>')
+            .append($('<span>').addClass('type').text(type))
+            .append($('<span>').addClass('msg').text(JSON.stringify(msg)))
+        )
+        logDiv.scrollTop = logDiv.scrollHeight;
+      }
     </script>
   </body>
 </html>

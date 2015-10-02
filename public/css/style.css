@@ -26,19 +26,19 @@ html, body { height: 100%; margin: 0; }
 .box .row.content .right { flex: 0 0 200px; }
 .box .row.footer { flex: 0 0 40px; }
 #log {
-	background-color: black;
-	/* border-bottom: 5px lightgrey groove; */
-	flex: 1 0 150px;
-	padding-left: 10px;
-	font-weight: 900;
-	color: green;
-	list-style-type: none;
-	overflow: auto;
-	display: none;
-	word-break: break-all;
+    background-color: black;
+    /* border-bottom: 5px lightgrey groove; */
+    flex: 1 0 150px;
+    padding-left: 10px;
+    font-weight: 900;
+    color: green;
+    list-style-type: none;
+    overflow: auto;
+    display: none;
+    word-break: break-all;
 }
-#log li {	display: flex; }
-#log .type {	flex: 0 0 150px; }
+#log li { display: flex; }
+#log .type { flex: 0 0 150px; }
 #logbutton { flex: 1 0 10px; background: linear-gradient(black, lightgrey); }
 #sidepane { display: flex; flex-direction: column; }
 #users { flex: 1 0 auto; word-break: break-all; }
@@ -54,10 +54,10 @@ form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 
 #messages { list-style-type: none; margin: 0; padding: 0; padding-bottom: 42px; overflow-y: auto; }
 #messages li { padding: 5px 10px; }
 #messages li:nth-child(odd) { background: #eee; }
-#messages li.warn { font-style : italic; color: crimson; font-weight:700; }
+#messages li.warn         { font-style : italic; color: crimson; font-weight:700; }
 #messages li.notification { font-style : italic; font-weight:700; }
-#messages li.info			{ color: blue; font-weight:700; }
-#messages li.emote			{ font-style: italic; }
+#messages li.info         { color: blue; font-weight:700; }
+#messages li.emote        { font-style: italic; }
 #users ul { list-style-type: none; }
 #users li { padding: 5px 10px; }
 #users li:nth-child(odd) { background: #eee; }
