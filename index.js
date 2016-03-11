@@ -155,7 +155,7 @@ function get_color(nick) {
 }
 //------
 
-http.listen(80, function () {
+http.listen(8081, function () {
     console.log('listening...');
 });
 
