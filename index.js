@@ -155,8 +155,8 @@ function get_color(nick) {
 }
 //------
 
-http.listen(8081, function () {
-    console.log('listening on *:8081');
+http.listen(80, function () {
+    console.log('listening...');
 });
 
 //// sending to sender-client only
