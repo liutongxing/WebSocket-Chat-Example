@@ -11,7 +11,7 @@
     "node": true
   },
   "scripts": {
-    "start": "node index.js",
+    "start": "PORT=8081 node index.js",
     "supervisor": "supervisor -- index.js"
    }
 }
