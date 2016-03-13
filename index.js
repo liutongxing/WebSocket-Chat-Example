@@ -4,6 +4,8 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var _ = require("underscore");
 
+io.disable('browser client cache');
+
 app.use(express.static('public'));
 
 app.get('/', function (req, res) {
